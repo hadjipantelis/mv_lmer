@@ -187,16 +187,6 @@ PrfDvnce_Mask_GaCo <- function(theta, Zt, X, y, XtX, nlevU = 1, nlevL1 = NA, nle
 		Betas <- matrix(beta, ncol=nlevU)
 		if(nlevU==1) {  
 			SE_of_Betas <- matrix( sqrt(diag(solve(crossprod(RX))))*sqrt(prss/(n-p)),ncol=nlevU)
-				#if( 1==2) {	#The following commands compute Std.Errors Explictly. They are _correct_ but unncessary.
-				#Sigma_E <-  sqrt(prss/(n-p)); R_Matrix <- (diag(n) * Sigma_E^2) 		
-				#D_Matrix1 <- kronecker(  tcrossprod( Sigma_E *  Kl1), diag(nlevL1))
-				#if( nlevL2 != 0 ) { D_Matrix2 <- kronecker(  tcrossprod( Sigma_E *  Kl2), diag(nlevL2)) ;}
-				#if ( nlevL2 == 0 ){ D_Matrix <- D_Matrix1}
-				#else { D_Matrix <- matrix( nrow= (nlevL1 + nlevL2) , rep(0, (nlevL1 + nlevL2)^2) );
-				#	D_Matrix[1:nlevL1,1:nlevL1] =  D_Matrix1;  D_Matrix[(1+nlevL1):(nlevL1 + nlevL2),(1+nlevL1):(nlevL1 + nlevL2)] =  D_Matrix2; }
-	 			#VCOV_OF_MODEL <- solve( t(X) %*% solve( R_Matrix +  t(Zt) %*% D_Matrix  %*% Zt   ) %*% X   ) 
-				#SEB <-  sqrt(diag(VCOV_OF_MODEL) )
-				#return( list(Betas, SE_of_Betas,SEB) )}
 			return(list(Betas,SE_of_Betas))
 		}
 		else 
@@ -211,8 +201,7 @@ PrfDvnce_Mask_GaCo <- function(theta, Zt, X, y, XtX, nlevU = 1, nlevL1 = NA, nle
 			SigmaVector[i] = (  sqrt((nlevU*J)/(n-p)) ) # if you don't multiply by nlevU you need to change n & p
 		}
 		
-		#SE_of_Betas <- matrix( sqrt(diag(solve(crossprod(RX))))*sqrt(prss/(n-p)),ncol=nlevU)
-
+		
 		SEB<- matrix( sqrt(diag(solve(crossprod(RX))))* rep( SigmaVector, each= (p/nlevU)) ,ncol=nlevU)
 		return( list(Betas, SEB))
 		}	 
