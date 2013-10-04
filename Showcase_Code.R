@@ -156,7 +156,7 @@ library(lme4)
 	Class2 = sample(1:nlev2, N, replace=T ) 	#Random Nvel Classes
 	Zsingle2 <- model.matrix( ~-1 + as.factor(  Class2 ) ) 
 
-	P <- diag(p) ; 				#R.E. Correlation structure
+	P <- diag(p) ; 					#R.E. Correlation structure
 	P[1,2] =correlation1_; P[2,1] = P[1,2];
 	P[1,3] =correlation2_; P[3,1] = P[1,3];
 	P[1,4] =correlation3_; P[4,1] = P[1,4];
@@ -198,73 +198,7 @@ library(lme4)
 	mv_z[, 1:(p*nlev1)] <- mv_z1
 	mv_z[, (1+(p*nlev1) ): (p*(nlev2+nlev1))] <- mv_z2
 
-
-if(1==3){
-#Invalid Regression using LMER 
-	Indicator <- as.factor(rep(c(1,2,3,4), each=N) );  
-	MV_Class1  <- as.factor(rep(Class1,p))
-	MV_Class2  <- as.factor(rep(Class2,p))
-	print( "Optimizing LMER.... (this may take a moment)")
-	MV_lmer_B =  lmer(as.vector( matrix(A, ncol=1) ) ~ -1 + kronecker(diag(p),X) + ( 0+Indicator|MV_Class2)   + ( 0+Indicator|MV_Class1)  );
-	print( "Optimization finished....")	
-
-#LMER results
-	Q <-summary(MV_lmer_B)
-
-#Compare Results if one had the same theta:
-	#REML final value
-	print( "==============================================================================================================")
-	print( "Print REML value if one used the same theta as the ones from lme4")
-	print( paste( "lme4 result  :",  as.numeric( Q$devcomp$cmp["REML"] ) , sep= " ")) 
-	print( paste( "MVLMER result:", as.numeric( PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta, X= mv_x, XtX=mv_xxt, Zt= t(mv_z), y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2) )))
-	
-	#Betas / #The standard errors SHOULD NOT be the same
-	print( "==============================================================================================================")
-	print( "Print Betas if one used the same theta as the ones from lme4; the Std.Error are not the same.")
-	print( Q$coefficients )
-	HatBeta= matrix(rep(0, p*2*5), ncol=2)
-	HatBeta[,1] = matrix( ncol=1, PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta, X= mv_x, XtX=mv_xxt, Zt= t(mv_z), y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2, GiveBeta=1) [[1]])
-	HatBeta[,2] = matrix( ncol=1,  PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta, X= mv_x, XtX=mv_xxt, Zt= t(mv_z), y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2, GiveBeta=1) [[2]])
-	print(HatBeta)
-	
-	#Sigma_E /#Only the "sample-wide" sigma should be the same (last entry)
-	print( "==============================================================================================================")
-	print( "Print Sigma(s) if one used the same theta as the ones from lme4; MVLMER returns a sigma for each dimension, last entry is the \"sample\"-wide sigma ")
-	print( paste( "lme4 result  :",  as.numeric(Q$sigma), sep= " "))
-	Vars = as.numeric( PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta,X= mv_x, XtX=mv_xxt, Zt= t(mv_z) , y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2, GiveSigma=1))
-	print( do.call (paste, as.list( unlist( list( "MVLMER result:", Vars)))) ) 
-	
-	#Sigma_G /#Correlations and StdDevs
-	print( "==============================================================================================================")
-	print( "Print VCV-structure for each Rand.Effect if one used the same theta as the ones from lme4")
-	print( "Correlations first and then Standard Deviations")
-
-	print( "====================================================")
-	print( "Correlation for Random Effect 1:")
-	print( "LMER:")
-	print( round( digits=3, attr( Q$varcor$MV_Class1, "correlation")))
-	print( "MVLMER:")
-	print( round( digits=3, PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta, X= mv_x, XtX=mv_xxt, Zt= t(mv_z), y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2, GiveCorrelations=1)[[1]]))
-
-	print( "Correlation for Random Effect 2:")
-	print( "LMER:")
-	print( round( digits=3, attr( Q$varcor$MV_Class2, "correlation")))
-	print( "MVLMER:")
-	print( round( digits=3, PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta, X= mv_x, XtX=mv_xxt, Zt= t(mv_z), y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2, GiveCorrelations=1)[[2]]))
-	
-	print( "====================================================")
-	print( "Std.Devs for Random Effect 1:")
-	print( "LMER:")
-	print( as.numeric( attr( Q$varcor$MV_Class1, "stddev")))
-	print( "MVLMER:")
-	print( sqrt(diag(PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta, X= mv_x, XtX=mv_xxt, Zt= t(mv_z), y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2, GiveCovariances=1)[[1]])) )
-	print( "Std.Devs for Random Effect 2:")	
-	print( "LMER:")
-	print( as.numeric(attr( Q$varcor$MV_Class2, "stddev")) )
-	print( "MVLMER:")
-	print( sqrt(diag(PrfDvnce_Mask_GaCo(theta=MV_lmer_B@theta, X= mv_x, XtX=mv_xxt, Zt= t(mv_z), y= matrix(A, ncol=1), nlevU=p,  nlevL1 = nlev1, nlevL2=nlev2, GiveCovariances=1)[[2]])) )
-}
-#Optimize for current implementation using off-the-shelf Simplex Solver	
+#Optimize for current implementation using off-the-shelf Simplex and BFGS Solvers	
 	#We now "know" the approximate covariance between the random effects.
 	print( "==============================================================================================================")
 	print( "Optimizing MVLMER....")
