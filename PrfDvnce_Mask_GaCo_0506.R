@@ -3,7 +3,7 @@
 #This version accommodates one or two random effects only. It can work in a univariate and a multivariate setting.
 #It allows specification of the correlation patterns between the mixed effects covariances.
 
-PrfDvnce_Mask_GaCo_0506 <- function(theta, Zt, X, y, XtX, nlevU = 1, nlevL1 = NA, nlevL2 = NA, ML=0, GiveBeta=0, GiveSigma=0, GiveGamma=0, GiveL= 0, GiveRX= 0, GiveUt=0, GiveRZX= 0, GiveLambda = 0, GiveFitted =0, GiveCorrelations =0,GiveCovariances = 0, GiveResiduals=0, Mask = NA, GarCol=0){
+PrfDvnce_Mask_GaCo <- function(theta, Zt, X, y, XtX, nlevU = 1, nlevL1 = NA, nlevL2 = NA, ML=0, GiveBeta=0, GiveSigma=0, GiveGamma=0, GiveL= 0, GiveRX= 0, GiveUt=0, GiveRZX= 0, GiveLambda = 0, GiveFitted =0, GiveCorrelations =0,GiveCovariances = 0, GiveResiduals=0, Mask = NA, GarCol=0){
 
   #theta 		: vector of parameters to optimize for. ratios like sqrt( sigma_e^2 / sigma_g^2)
 	#Zt		: traspose of Z matrix. Usually an indicator matrix (matrix)
