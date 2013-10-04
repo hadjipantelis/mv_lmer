@@ -1,7 +1,7 @@
 #Depending on the provided mask and nlev* variables we get the corresponding mixed effects regression
 #Code is based on a presentation by D.Bates in  University of Lausanne on July 2, 2009
-#This version accommodates a single random effect. It works only with a double nested hierarchy 
-#It allows correlation between the mixed effects covariances.
+#This version accommodates one or two random effects only. It can work in a univariate and a multivariate setting.
+#It allows specification of the correlation patterns between the mixed effects covariances.
 
 PrfDvnce_Mask_GaCo_0506 <- function(theta, Zt, X, y, XtX, nlevU = 1, nlevL1 = NA, nlevL2 = NA, ML=0, GiveBeta=0, GiveSigma=0, GiveGamma=0, GiveL= 0, GiveRX= 0, GiveUt=0, GiveRZX= 0, GiveLambda = 0, GiveFitted =0, GiveCorrelations =0,GiveCovariances = 0, GiveResiduals=0, Mask = NA, GarCol=0){
 
